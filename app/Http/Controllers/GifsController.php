@@ -12,21 +12,31 @@ class GifsController extends Controller
     
     /**
     * Create a new controller instance
-    *
+    * @param HttpClientInterface
     * @return void
     */
     public function __construct(HttpClientInterface $httpClient)
     {
         $this->httpClient = $httpClient;
     }
-
-    public function index($search)
+    
+    /**
+    * Search For a Gif with the search string given
+    * @param string
+    * @return Response
+    */
+    public function search($search)
     {
         if (!empty($search)) {
-            $gif=$this->httpClient->getData($search);
-           return response()->json(['data'=>$gif]);
-          
-            
+            $results=$this->httpClient->getSearchResults($search);
+            return response()->json($results);
         }
+        
+        $error = ['error'=>[
+            'status'=>'Error',
+            'message'=> 'Error: Please enter a search term.',
+            ]
+        ];
+        return response()->json($error);
     }
 }

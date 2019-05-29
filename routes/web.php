@@ -16,5 +16,5 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix'=>'api/v1'], function () use ($router) {
-    $router->get('/search/gif/{search}', ['as' => 'search.gifs', 'uses' => 'GifsController@index']);
+    $router->get('/search/gif/{search}', ['as' => 'search.gifs', 'uses' => 'GifsController@search']);
 });

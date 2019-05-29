@@ -4,6 +4,8 @@ namespace App\Services\Contracts;
 
 interface HttpClientInterface
 {
-    public function createConnection();
+    public function getConnectionUrl():string;
+    public function getSearchResults(string $query):array;
+    public function getClient();
+    public function getApiKey():string;
 }
-
