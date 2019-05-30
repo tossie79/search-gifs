@@ -2,9 +2,12 @@
 declare(strict_types=1);
 namespace App\Services;
 
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Stream;
 use App\Services\Contracts\HttpClientInterface;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 
 class GiphyGuzzleClient implements HttpClientInterface
 {
@@ -71,28 +74,30 @@ class GiphyGuzzleClient implements HttpClientInterface
     */
     public function getSearchResults(string $search):array
     {
-        $response = $this->getClient()->request(
-            'GET',
-            "{$this->getConnectionUrl()}",
-            [
+        if (!$search) {
+            $this->throwException('Search String is required.');
+        }
+        try {
+            $response = $this->getClient()->request(
+                'GET',
+                "{$this->getConnectionUrl()}",
+                [
                 'query' => [
                     "q" => "{$search}",
                     "api_key"=>"{$this->getApiKey()}"
+                    ]
                 ]
-            ]
-        );
+            );
         
-        $results = $response->getBody()->getContents();
-        $results = json_decode($results, true);
-        $results=$results['data'];
-        $status = $response->getStatusCode();
-        $message = $response->getReasonPhrase();
-        $giphyArray =
-        [
-            'status'=>$status,
-            'message'=>$message,
-            'data'=>$results
-        ];
-        return $giphyArray;
+            $results = $response->getBody()->getContents();
+            $results = json_decode($results, true);
+            $results=$results['data'];
+            $status = $response->getStatusCode();
+            $message = $response->getReasonPhrase();
+            $giphyArray = ['status'=>$status,'message'=>$message,'data'=>$results];
+            return $giphyArray;
+        } catch (ClientException $e) {
+            $this->throwException(sprintf('Failed to get giphy data for "%s".', $search));
+        }
     }
 }

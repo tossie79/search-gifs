@@ -8,6 +8,9 @@ use App\Services\Contracts\HttpClientInterface;
 
 class GifsController extends Controller
 {
+    /***
+    * @var httpClient
+    */
     private $httpClient;
     
     /**
@@ -31,7 +34,7 @@ class GifsController extends Controller
             $results=$this->httpClient->getSearchResults($search);
             return response()->json($results);
         }
-        
+
         $error = ['error'=>[
             'status'=>'Error',
             'message'=> 'Error: Please enter a search term.',

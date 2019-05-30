@@ -20,61 +20,27 @@ class GifsControllerTest extends TestCase
         Mockery::close();
     }
  
-
+    /**
+    * Testing the GET Route
+    */
     public function testRoute()
     {
-        $this->json('GET', '/api/v1/search/gif/banana')
+        $this->json('GET', '/api/v1/search/gif/sand')
              ->assertEquals(200, $this->response->status());
     }
-
+    
+    /**
+    * Testing the Controller Search Function
+    */
     public function testSearch()
     {
+        $body = file_get_contents(__DIR__.'\Mocks\response.txt');
+        $response = new Response($status = 200, $data = [$body]);
         $httpClient = Mockery::mock(HttpClientInterface::class);
-        $httpClient->shouldReceive('getSearchResults')
-            ->andReturn(
-                $data=[
-                    'status'=>'200',
-                    'message'=>'OK',
-                    'data'=>[]
-                ]
-        )->once();
-        $search = 'banana';
-        //$this->app->instance(HttpClientInterface::class, $httpClient);
+        $httpClient->shouldReceive('getSearchResults')->andReturn($data = [$body])->once();
+        $search = 'sand';
         $gifsController = new GifsController($httpClient);
-        
         $response = $gifsController->search($search);
-        // dd($response);
-        // $this->assertTrue(is_int($response));
-        // $this->assertEquals(200, $response['statusCode']);
-        // $this->seeJsonStructure(
-        //     [   "status",
-        //         "message",
-        //         "data"
-        //     ]
-        // );
+        $this->assertEquals(200, $response->status());
     }
-    // public function testSearch()
-    // {
-    //     $mock = Mockery::mock(HttpClientInterface::class);
-    //     $mock->shouldReceive('getSearchResults')->with('banana');
-
-    //     $this->app->instance(HttpClientInterface::class, $mock);
-    //     $repo = $this->app->make(GifsController::class);
-    //     $result = $repo->search('banana');
-    //     dd($result->getBody());
-    //     $js=json_decode($result);
-    // }
-
-    // public function testMyRoute()
-    // {
-    //     $response = new Response([444]);
-    //     $client = Mockery::mock(HttpClientInterface::class)
-    //                  ->makePartial()
-    //                  ->shouldReceive('getSearchResults')
-    //                  ->once()
-    //                  ->andReturn($response);
-    //     $this->app->instance(HttpClientInterface::class, $client);
-
-    //     $this->json('get', '/')->seeJson([ 'status' => 444 ]);
-    // }
 }

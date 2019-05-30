@@ -20,45 +20,17 @@ class GuzzleTest extends TestCase
         parent::tearDown();
         Mockery::close();
     }
- 
+
+    /**
+    * Testing the Guzzle Http Client
+    */
     public function testHttpClient()
     {
+        $body = file_get_contents(__DIR__.'\Mocks\response.txt');
+        $response = new Response($status = 200, $data = [$body]);
         $mock =  Mockery::mock(Client::class);
-        $mock->shouldReceive('request')->andReturn(new Response(
-            $status = 200,
-            $data=[
-            'status'=>'200',
-            'message'=>'OK',
-            'data'=>[]
-        ]
-        ));
-        $this->assertEquals(200, $this->response->status());
+        $mock->shouldReceive('request')->with('sand')->andReturn($response);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("OK", $response->getReasonPhrase());
     }
-
-    // public function testRoute()
-    // {
-    //     $jsonObject = json_encode(['foo']);
-    //     $uri = 'http://api.giphy.com/v1/gifs/search';
-
-    //     $mockResponse = $this->getMockBuilder(Response::class)->getMock();
-
-    //     $mockResponse->method('getBody')->willReturn($jsonObject);
-
-    //     $clientMock = $this->getMockBuilder(Client::class)->getMock();
-
-    //     $clientMock->expects($this->once())
-    //         ->method('request')
-    //         ->with(
-    //             'GET',
-    //             $uri,
-    //             ['q'=>'banana']
-    //         )
-    //         ->willReturn($mockResponse);
-
-    //     //$result = $yourClass->get($uri);
-
-    //     $expected = json_decode($jsonObject);
-
-    //     //$this->assertSame($expected, $result);
-    // }
 }
